@@ -196,7 +196,7 @@ let swipeAction = function() {
     posY1 = evt.clientY;
 
 
-    if (posX1 == settings.x || Math.abs(posX1 - settings.x) < 30) {
+    // if (posX1 == settings.x || Math.abs(posX1 - settings.x) < 30) {
         keys.ArrowRight = false
         keys.ArrowLeft = false
         settings.x = Math.ceil(posX1) - 25
@@ -207,22 +207,22 @@ let swipeAction = function() {
             settings.x = 0
         }
         return
-    }
+    // }
 
 
-    if (posX1 - posInit > 0) {
-        keys.ArrowRight = true
-        keys.ArrowLeft = false
-        if (settings.x < gameArea.offsetWidth - car.offsetWidth) {
-            settings.x += settings.speed;
-        }
-    } else if (posX1 - posInit < 0) {
-        keys.ArrowLeft = true
-        keys.ArrowRight = false
-        if (settings.x > 0) {
-            settings.x -= settings.speed;
-        }
-    }
+    // if (posX1 - posInit > 0) {
+    //     keys.ArrowRight = true
+    //     keys.ArrowLeft = false
+    //     if (settings.x < gameArea.offsetWidth - car.offsetWidth) {
+    //         settings.x += settings.speed;
+    //     }
+    // } else if (posX1 - posInit < 0) {
+    //     keys.ArrowLeft = true
+    //     keys.ArrowRight = false
+    //     if (settings.x > 0) {
+    //         settings.x -= settings.speed;
+    //     }
+    // }
     //
     // console.log('posX2: ' + posX2)
     // console.log(settings.x)
