@@ -52,10 +52,28 @@ car.classList.add('car');
 document.addEventListener('keydown', startGame);
 document.addEventListener('keyup', stopGame);
 
-const music = ['./audio/game-audio.mp3'];
+const music = ['./audio/game-audio.wav', './audio/boom.wav', './audio/splash.wav'];
 const audio = new Audio();
 audio.src = music[0];
 audio.volume = 0.1;
+const boomAudio = new Audio();
+boomAudio.src = music[1];
+boomAudio.volume = 0.1;
+const splashAudio = new Audio();
+splashAudio.src = music[2];
+splashAudio.volume = 0.1;
+
+
+//Лужа
+const puddle = document.createElement('div');
+puddle.classList.add('puddle');
+puddle.y = -2500;
+puddle.style.top = '-2500px';
+
+//ВСПЛЕСК
+const splash = document.createElement('div');
+splash.classList.add('splash');
+splash.classList.add('hide');
 
 const keys = {
     ArrowDown: false,
@@ -167,8 +185,12 @@ startBtn.addEventListener('click', () => {
             gameArea.appendChild(enemy);
         }
     }
-
     enemies = document.querySelectorAll('.enemy');
+
+    //Background лужи
+    puddle.style.backgroundImage = 'url("image/' + settings.mode + '/puddle.svg")'
+    gameArea.appendChild(puddle);
+    gameArea.appendChild(splash);
 
     settings.score = 0;
     settings.start = true;
@@ -251,6 +273,16 @@ function playGame() {
         score.innerHTML = settings.score;
         moveRoad();
         moveEnemy();
+        movePuddle();
+
+        let checkScore = settings.score % 5000
+
+        if (settings.speed <= 12 && checkScore > 4996 || (checkScore >= 0 && checkScore < 4)) {
+            settings.speed += 1
+            speedSum += speedSumInc
+            puddleSpeedSum += puddleSpeedSumInc
+        }
+
         if (keys.ArrowLeft && settings.x > 0) {
             settings.x -= settings.speed;
         }
@@ -303,7 +335,6 @@ function moveEnemy() {
             startMenu.classList.remove('hide');
             settings.speed = 5;
             settings.traffic = 3;
-            diffSelected.textContent = '';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
@@ -325,6 +356,32 @@ function moveEnemy() {
             // item.style.height = chosen_enemy.height
         }
     });
+}
+
+function movePuddle() {
+    let carRect = car.getBoundingClientRect();
+    let carXPos = car.style.left;
+    let enemyRect = puddle.getBoundingClientRect();
+    if (carRect.top - enemyRect.bottom <= puddleSpeedSum && carRect.top - enemyRect.bottom >= -puddleSpeedSum) {
+        splashAudio.play()
+        splash.classList.remove('hide');
+        splash.style.left = 'calc(' + carXPos +  ' - ' + ((gameArea.offsetWidth * 212 / 590 / 2) - 25) + 'px)'
+        splash.style.top = carRect.top + 'px';
+        setTimeout(() => {
+            splash.classList.add('splash-after');
+            splash.style.left = 'calc(' + carXPos +  ' - ' + ((gameArea.offsetWidth * 300 / 590 / 2) - 25) + 'px)'
+            splash.style.top = carRect.top + 'px';
+            setTimeout(() => {
+                splash.classList.remove('splash-after');
+                splash.classList.add('hide');
+            }, 100);
+        }, 100);
+    }
+    puddle.y += puddleSpeedSum;
+    puddle.style.top = puddle.y + 'px';
+    if (puddle.y >= document.documentElement.clientHeight) {
+        puddle.y = -2500;
+    }
 }
 
 

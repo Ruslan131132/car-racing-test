@@ -185,6 +185,40 @@ body {
     z-index: 1;
 }
 
+.puddle {
+    width: 100%;
+    height: calc(100vw * 135 / 590);
+    background-image: url(image/offroad/puddle.svg);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    position: absolute;
+    z-index: 4;
+    max-height: 154px;
+    left: 0;
+}
+
+.splash {
+    width: calc(100% * 212 / 590);
+    height: 61px;
+    background-image: url(image/splash.svg);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    position: absolute;
+    z-index: 8;
+}
+
+.splash.splash-after {
+    width: calc(100% * 300 / 590);
+    height: 86px;
+    background-image: url(image/splash2.svg);
+}
+
+.splash.hide {
+    display: none;
+}
+
 .start__menu {
     position: absolute;
     top: 50%;
