@@ -197,6 +197,19 @@ startBtn.addEventListener('click', () => {
     gameArea.appendChild(puddle);
     gameArea.appendChild(splash);
 
+
+    //Машина на другой полосе
+
+    // if (settings.mode == 'gravity') {
+    //     let chosen_enemy = enemyStyles[random(enemyStyles.length)]
+    //     enemyBack.style.background =
+    //         'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
+    //     enemyBack.style.width = chosen_enemy.width
+    //     enemyBack.style.height = chosen_enemy.height
+    //     enemyBack.style.display = 'block'
+    //     gameArea.appendChild(enemyBack);
+    // }
+
     settings.score = 0;
     settings.start = true;
     gameArea.appendChild(car);
