@@ -153,10 +153,10 @@ startBtn.addEventListener('click', () => {
 
 
     // ГЕНЕРАЦИЯ ПРЕПЯТСТВИЙ
-    for (let i = 0; i < 4; i++) {//lines
+    for (let i = 0; i < 16; i++) {//lines
         let y = -500 * (i + 1);
 
-        let countCars = i % 2 == 0 ? 1 : 2; // количество машин на одной полосе
+        let countCars = i % 3 == 0 ? 2 : 1; // количество машин на одной полосе
         let enemyOffsetsArray = JSON.parse(JSON.stringify(enemyOffsets));
         lineAvailablePositions[i] = [...enemyPositions];
 
@@ -347,11 +347,11 @@ function moveEnemy() {
         item.y += speedSum;
         item.style.top = item.y + 'px';
         if (item.y >= document.documentElement.clientHeight) {
-            item.y = -2000 + document.documentElement.clientHeight;
+            item.y = -8000 + document.documentElement.clientHeight;
             let carPos =  lineAvailablePositions[item.dataset.line][0];
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
-            item.classList.remove(item.dataset.current)
-            item.classList.add(chosen_enemy)
+            // item.classList.remove(item.dataset.current)
+            // item.classList.add(chosen_enemy)
 
             // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
             // console.log(gameArea.offsetWidth)
