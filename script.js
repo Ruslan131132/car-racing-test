@@ -20,6 +20,11 @@ let posInit = 0,
     isSwipe = false,
     isScroll = false;
 
+
+let lines;//блоки заднего фона
+const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
+
+
 const enemyStyles = ['enemy1', 'enemy2', 'enemy3', 'enemy4', 'enemy5'];
 
 car.classList.add('car');
@@ -44,6 +49,7 @@ const settings = {
     score: 0,
     speed: 6,
     traffic: 3,
+    mode: 'gravity'
 };
 
 function getQuantityElements(heightElement) {
@@ -57,24 +63,27 @@ function random(num) {
 diffBtn.forEach(item => {
     item.addEventListener('click', () => {
         if (item.classList.contains('easy')) {
-            settings.speed = 5;
-            settings.traffic = 3.5;
+            // settings.speed = 5;
+            // settings.traffic = 3.5;
+            settings.mode = 'offroad'
             diffSelected.textContent = 'Выбрана сложность: легкая';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
         } else if (item.classList.contains('medium')) {
-            settings.speed = 8;
-            settings.traffic = 3;
+            // settings.speed = 8;
+            // settings.traffic = 3;
+            settings.mode = 'gravity'
             diffSelected.textContent = 'Выбрана сложность: средняя';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
         } else if (item.classList.contains('hard')) {
-            settings.speed = 10;
-            settings.traffic = 2.5;
+            // settings.speed = 10;
+            // settings.traffic = 2.5;
+            settings.mode = 'gravity'
             diffSelected.textContent = 'Выбрана сложность: сложная';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
@@ -92,13 +101,17 @@ startBtn.addEventListener('click', () => {
     screenGame.classList.add('screen-up')
     screenGame.classList.remove('screen_hide')
     screenStart.classList.remove('screen_show');
-    for (let i = 0; i < getQuantityElements(80); i++) {
-        const line = document.createElement('div');
-        line.classList.add('line');
-        line.style.top = i * 80 + 'px';
-        line.y = i * 80;
-        gameArea.appendChild(line);
+    // ГЕНЕРАЦИЯ ПОЛЯ
+    for (let j = 0; j < 5; j++) {
+        const line_block = document.createElement('div');
+        line_block.classList.add('line_block');
+        line_block.style.bottom = (j) * 298 + 'px';
+        line_block.y = ((j) * 298);
+        line_block.style.backgroundImage = 'url("image/' + settings.mode + '/' + lineStyles[random(lineStyles.length)] + '.png")'
+        gameArea.appendChild(line_block);
     }
+
+    lines = document.querySelectorAll('.line_block');
 
     for (let i = 0; i < getQuantityElements(80 * settings.traffic); i++) {
         const enemy = document.createElement('div');
@@ -157,30 +170,6 @@ let swipeEnd = function() {
 
     keys.ArrowRight = false
     keys.ArrowLeft = false
-
-    // if (posInit < posX1) {
-    //     slideIndex--;
-    // } else if (posInit > posX1) {
-    //     slideIndex++;
-    // }
-    //
-
-    // if (allowSwipe) {
-    //     if (Math.abs(posFinal) > posThreshold) {
-    //
-    //     }
-    //
-    //     if (posInit !== posX1) {
-    //         allowSwipe = false;
-    //         slide();
-    //     } else {
-    //         allowSwipe = true;
-    //     }
-    //
-    // } else {
-    //     allowSwipe = true;
-    // }
-
 }
 
 
@@ -195,8 +184,6 @@ let swipeAction = function() {
     posY2 = posY1 - evt.clientY;
     posY1 = evt.clientY;
 
-
-    // if (posX1 == settings.x || Math.abs(posX1 - settings.x) < 30) {
         keys.ArrowRight = false
         keys.ArrowLeft = false
         settings.x = Math.ceil(posX1) - 25
@@ -207,78 +194,6 @@ let swipeAction = function() {
             settings.x = 0
         }
         return
-    // }
-
-
-    // if (posX1 - posInit > 0) {
-    //     keys.ArrowRight = true
-    //     keys.ArrowLeft = false
-    //     if (settings.x < gameArea.offsetWidth - car.offsetWidth) {
-    //         settings.x += settings.speed;
-    //     }
-    // } else if (posX1 - posInit < 0) {
-    //     keys.ArrowLeft = true
-    //     keys.ArrowRight = false
-    //     if (settings.x > 0) {
-    //         settings.x -= settings.speed;
-    //     }
-    // }
-    //
-    // console.log('posX2: ' + posX2)
-    // console.log(settings.x)
-    // console.log('posX1: ' + posX1)
-    // console.log('posY2: ' + posY2)
-    // console.log('posY1: ' + posY1)
-    // console.log('posInit: ' + posInit)
-
-    // определение действия свайп или скролл
-    // if (!isSwipe && !isScroll) {
-    //     let posY = Math.abs(posY2);
-    //     if (posY > 7 || posX2 === 0) {
-    //         isScroll = true;
-    //         allowSwipe = false;
-    //     } else if (posY < 7) {
-    //         isSwipe = true;
-    //     }
-    // }
-    //
-    // if (isSwipe) {
-    //     if (settings.x > 0) {
-    //         settings.x -= settings.speed;
-    //     }
-    //     if (settings.x < gameArea.offsetWidth - car.offsetWidth) {
-    //         settings.x += settings.speed;
-    //     }
-    //
-    //
-    //     console.log()
-        // // запрет ухода влево на первом слайде
-        // if (slideIndex === 0) {
-        //     if (posInit < posX1) {
-        //         setTransform(transform, 0);
-        //         return;
-        //     } else {
-        //         allowSwipe = true;
-        //     }
-        // }
-        //
-        // // запрет ухода вправо на последнем слайде
-        // if (slideIndex === --slides.length) {
-        //     if (posInit > posX1) {
-        //         setTransform(transform, lastTrf);
-        //         return;
-        //     } else {
-        //         allowSwipe = true;
-        //     }
-        // }
-        //
-        // // запрет протаскивания дальше одного слайда
-        // if (posInit > posX1 && transform < nextTrf || posInit < posX1 && transform > prevTrf) {
-        //     reachEdge();
-        //     return;
-        // }
-    // }
-
 }
 
 function startGame(event) {
@@ -316,16 +231,16 @@ function stopGame(event) {
 }
 
 function moveRoad() {
-    let lines = document.querySelectorAll('.line');
     lines.forEach(function (line) {
-        line.y += settings.speed;
-        line.style.top = line.y + 'px';
-        if (line.y >= document.documentElement.clientHeight) {
-            line.y = -80;
+        line.y -= settings.speed;
+        line.style.bottom = line.y + 'px';
+        if (line.y <= -298) {
+            line.y = 1192 + line.y + 298;
+            line.style.backgroundImage = 'url("image/' + settings.mode + '/' + lineStyles[random(lineStyles.length)] + '.png")'
+
         }
     });
 }
-
 function moveEnemy() {
     let enemies = document.querySelectorAll('.enemy');
     enemies.forEach(function (item) {

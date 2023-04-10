@@ -166,18 +166,17 @@ body {
     overflow: hidden;
 }
 
-.line {
+.line_block {
     position: absolute;
-    width: 10px;
-    height: 50px;
-    background: #ffffff;
-    /*left: 245px;*/
-
-    margin-left: auto;
-    margin-right: auto;
     left: 0;
     right: 0;
-    text-align: center;
+    height: 300px;
+    background-image: url("image/gravity/img_1.png");
+    /*width: 100%;*/
+    background-size: 100% 300px;
+    background-repeat: no-repeat;
+    padding: 0 calc(100vw * 100 / 590);
+    max-width: 590px;
 }
 
 .start__menu {
