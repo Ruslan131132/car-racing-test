@@ -1,7 +1,6 @@
 const score = document.querySelector('.score_container'),
     startBtn = document.querySelector('.game__start'),
     game = document.querySelector('.game'),
-    gameArea = document.querySelector('.gamearea'),
     car = document.createElement('div'),
     diffBtn = document.querySelectorAll('.difficulty__button'),
     diffSelected = document.querySelector('.difficulty-selected'),
@@ -23,6 +22,7 @@ let posInit = 0,
 
 
 let lines;//блоки заднего фона
+let gameArea;
 const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
 
 
@@ -96,13 +96,18 @@ diffBtn.forEach(item => {
 
 startBtn.addEventListener('click', () => {
     startMenu.classList.add('hide');
-    gameArea.innerHTML = '';
+    game.innerHTML = '';
     car.style.left = 'calc(50% - 25px)';
     car.style.bottom = '75px';
     screenGame.classList.add('screen-up')
     screenGame.classList.remove('screen_hide')
     screenStart.classList.remove('screen_show');
     score.classList.remove('hide');
+
+    gameArea = document.createElement('div');
+    gameArea.classList.add('gamearea');
+    game.appendChild(gameArea);
+
     // ГЕНЕРАЦИЯ ПОЛЯ
     for (let j = 0; j < 5; j++) {
         const line_block = document.createElement('div');
