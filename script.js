@@ -354,8 +354,8 @@ function moveEnemy() {
             item.classList.add(chosen_enemy)
 
             // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
-            console.log(gameArea.offsetWidth)
-            console.log(lineAvailablePositions[item.dataset.line][0])
+            // console.log(gameArea.offsetWidth)
+            // console.log(lineAvailablePositions[item.dataset.line][0])
             item.style.left = gameArea.offsetWidth * carPos - (item.offsetWidth / 2) + 'px'
             lineAvailablePositions[item.dataset.line] = [item.dataset.pos]
             item.dataset.pos = carPos;
