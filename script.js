@@ -3,6 +3,7 @@ const score = document.querySelector('.score_container'),
     game = document.querySelector('.game'),
     car = document.createElement('div'),
     diffBtn = document.querySelectorAll('.difficulty__button'),
+    screens = document.querySelectorAll('.screen'),
     screenGame = document.querySelector('.screen_game'),
     screenStart = document.querySelector('.screen_start'),
     startMenu = document.querySelector('.start__menu');
@@ -25,18 +26,18 @@ let gameArea;
 const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
 const enemyOffsets = [-20, -10, 10, 20];
 const lineAvailablePositions = [];
-let enemyStyles = [{name: 'enemy1'}, {name: 'enemy2'}, {name: 'enemy3'}, {name: 'enemy4'}, {name: 'enemy5'}];
+const enemyStyles = [{name: 'enemy1'}, {name: 'enemy2'}, {name: 'enemy3'}, {name: 'enemy4'}, {name: 'enemy5'}];
 const enemyPositions = [
     (65 / 390),
     0.5,
     (330 / 390),
 ];
 
-
 const settings = {
     start: false,
     score: 0,
     speed: 6,
+    traffic: 3,
     mode: 'gravity'
 };
 
@@ -100,18 +101,6 @@ diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
-            enemyStyles = [
-                {
-                    name: 'enemy1',
-                    width: screenStart.offsetWidth * 133 / 590 + 'px',
-                    height: screenStart.offsetHeight * 49 / 1200 + 'px',
-                },
-                {
-                    name: 'enemy2',
-                    width: screenStart.offsetWidth * 111 / 590 + 'px',
-                    height: screenStart.offsetHeight * 50 / 1200 + 'px',
-                }
-            ];
         } else if (item.classList.contains('medium')) {
             // settings.speed = 8;
             // settings.traffic = 3;
@@ -121,28 +110,6 @@ diffBtn.forEach(item => {
             });
             item.classList.add('active');
             speedSum = settings.speed / 2;
-            enemyStyles = [
-                {
-                    name: 'enemy1',
-                    width: '67px',
-                    height: '223px',
-                },
-                {
-                    name: 'enemy2',
-                    width: '46.87px',
-                    height: '98px',
-                },
-                {
-                    name: 'enemy3',
-                    width: '64.97px',
-                    height: '125px',
-                },
-                {
-                    name: 'enemy4',
-                    width: '51px',
-                    height: '96.98px',
-                },
-            ];
         } else if (item.classList.contains('hard')) {
             // settings.speed = 10;
             // settings.traffic = 2.5;
@@ -152,18 +119,6 @@ diffBtn.forEach(item => {
             });
             item.classList.add('active');
             speedSum = settings.speed / 2;
-            enemyStyles = [
-                {
-                    name: 'enemy1',
-                    width: screenStart.offsetWidth * 89 / 590 + 'px',
-                    height: screenStart.offsetHeight * 49 / 1200 + 'px',
-                },
-                {
-                    name: 'enemy2',
-                    width: screenStart.offsetWidth * 30 / 590 + 'px',
-                    height: screenStart.offsetHeight * 35 / 1200 + 'px',
-                }
-            ];
         }
     });
 });
@@ -217,13 +172,13 @@ startBtn.addEventListener('click', () => {
             enemy.dataset.offset = enemyOffset;
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
             // chosen_enemy.name = 'enemy1.png';
-            // chosen_enemy.width = '50px';
-            enemy.style.background =
-                'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
+            chosen_enemy.width = '50px';
             // enemy.style.background =
-            //     'rgba(0, 0, 0, 0) url(image/' + chosen_enemy.name + '.png) center / cover no-repeat';
-            enemy.style.width = chosen_enemy.width
-            enemy.style.height = chosen_enemy.height
+            //     'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
+            enemy.style.background =
+                'rgba(0, 0, 0, 0) url(image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+            // enemy.style.width = chosen_enemy.width
+            // enemy.style.height = chosen_enemy.height
             enemy.y = y + enemyOffset
             enemy.style.top = enemy.y + 'px';
             enemy.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
@@ -257,6 +212,8 @@ let getEvent = function () {
 
 let swipeStart = function () {
     let evt = getEvent();
+
+
     if (allowSwipe) {
 
         posInit = posX1 = evt.clientX;
@@ -283,9 +240,13 @@ let swipeEnd = function() {
 
 
 let swipeAction = function() {
+
     let evt = getEvent();
+
     posX2 = posX1 - evt.clientX;
     posX1 = evt.clientX;
+
+
     posY2 = posY1 - evt.clientY;
     posY1 = evt.clientY;
 
@@ -372,8 +333,8 @@ function moveEnemy() {
             audio.currentTime = 0;
             audio.autoplay = false;
             startMenu.classList.remove('hide');
-            settings.speed = 6;
-            puddleSpeedSum = settings.speed
+            settings.speed = 5;
+            settings.traffic = 3;
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
@@ -384,15 +345,15 @@ function moveEnemy() {
             item.y = -2000 + document.documentElement.clientHeight;
             let carPos = gameArea.offsetWidth * lineAvailablePositions[item.dataset.line][0] + 'px';
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
-            item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
-            // item.style.left = 'calc(' + carPos + ' - ' + '50px' + '/ 2)'
+            // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
+            item.style.left = 'calc(' + carPos + ' - ' + '50px' + '/ 2)'
             lineAvailablePositions[item.dataset.line] = [item.dataset.pos]
             item.dataset.pos = carPos;
 
             item.style.background =
-                'rgba(0, 0, 0, 0) url(./image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
-            item.style.width = chosen_enemy.width
-            item.style.height = chosen_enemy.height
+                'rgba(0, 0, 0, 0) url(./image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+            // item.style.width = chosen_enemy.width
+            // item.style.height = chosen_enemy.height
         }
     });
 }
