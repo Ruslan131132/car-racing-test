@@ -26,7 +26,7 @@ let gameArea;
 const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
 const enemyOffsets = [-20, -10, 10, 20];
 const lineAvailablePositions = [];
-const enemyStyles = [{name: 'enemy1'}, {name: 'enemy2'}, {name: 'enemy3'}, {name: 'enemy4'}, {name: 'enemy5'}];
+let enemyStyles = ['enemy1', 'enemy2', 'enemy3', 'enemy4'];
 const enemyPositions = [
     (65 / 390),
     0.5,
@@ -101,6 +101,7 @@ diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
+            enemyStyles = ['enemy1', 'enemy2'];
         } else if (item.classList.contains('medium')) {
             // settings.speed = 8;
             // settings.traffic = 3;
@@ -110,15 +111,17 @@ diffBtn.forEach(item => {
             });
             item.classList.add('active');
             speedSum = settings.speed / 2;
+            enemyStyles = ['enemy1', 'enemy2', 'enemy3', 'enemy4'];
         } else if (item.classList.contains('hard')) {
             // settings.speed = 10;
             // settings.traffic = 2.5;
-            settings.mode = 'gravity'
+            settings.mode = 'comfort'
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
             speedSum = settings.speed / 2;
+            enemyStyles = ['enemy1', 'enemy2'];
         }
     });
 });
@@ -159,7 +162,7 @@ startBtn.addEventListener('click', () => {
 
         for (let j = 0; j < countCars; j++) {//lines
             let randPos = random(lineAvailablePositions[i].length)
-            let carPos = gameArea.offsetWidth * lineAvailablePositions[i][randPos] + 'px';
+            let carPos = lineAvailablePositions[i][randPos];
             let randOffset = random(enemyOffsetsArray.length)
             let enemyOffset = enemyOffsetsArray[randOffset]
             lineAvailablePositions[i].splice(randPos, 1)
@@ -167,22 +170,24 @@ startBtn.addEventListener('click', () => {
 
             const enemy = document.createElement('div');
             enemy.classList.add('enemy');
+            enemy.classList.add(settings.mode);
             enemy.dataset.line = i;
             enemy.dataset.pos = carPos;
             enemy.dataset.offset = enemyOffset;
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
+            enemy.classList.add(chosen_enemy);
+            enemy.dataset.current = chosen_enemy;
             // chosen_enemy.name = 'enemy1.png';
-            chosen_enemy.width = '50px';
             // enemy.style.background =
             //     'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
-            enemy.style.background =
-                'rgba(0, 0, 0, 0) url(image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+            // enemy.style.background =
+            //     'rgba(0, 0, 0, 0) url(image/' + chosen_enemy + '.png) center / cover no-repeat';
             // enemy.style.width = chosen_enemy.width
             // enemy.style.height = chosen_enemy.height
             enemy.y = y + enemyOffset
             enemy.style.top = enemy.y + 'px';
-            enemy.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
             gameArea.appendChild(enemy);
+            enemy.style.left = gameArea.offsetWidth * carPos - (enemy.clientWidth / 2) + 'px'
         }
     }
     enemies = document.querySelectorAll('.enemy');
@@ -343,15 +348,21 @@ function moveEnemy() {
         item.style.top = item.y + 'px';
         if (item.y >= document.documentElement.clientHeight) {
             item.y = -2000 + document.documentElement.clientHeight;
-            let carPos = gameArea.offsetWidth * lineAvailablePositions[item.dataset.line][0] + 'px';
+            let carPos =  lineAvailablePositions[item.dataset.line][0];
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
+            item.classList.remove(item.dataset.current)
+            item.classList.add(chosen_enemy)
+
             // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
-            item.style.left = 'calc(' + carPos + ' - ' + '50px' + '/ 2)'
+            console.log(gameArea.offsetWidth)
+            console.log(lineAvailablePositions[item.dataset.line][0])
+            item.style.left = gameArea.offsetWidth * carPos - (item.offsetWidth / 2) + 'px'
             lineAvailablePositions[item.dataset.line] = [item.dataset.pos]
             item.dataset.pos = carPos;
 
-            item.style.background =
-                'rgba(0, 0, 0, 0) url(./image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+
+            // item.style.background =
+            //     'rgba(0, 0, 0, 0) url(./image/' + chosen_enemy.name + '.png) center / cover no-repeat';
             // item.style.width = chosen_enemy.width
             // item.style.height = chosen_enemy.height
         }
