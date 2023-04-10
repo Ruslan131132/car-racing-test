@@ -3,7 +3,6 @@ const score = document.querySelector('.score_container'),
     game = document.querySelector('.game'),
     car = document.createElement('div'),
     diffBtn = document.querySelectorAll('.difficulty__button'),
-    diffSelected = document.querySelector('.difficulty-selected'),
     screens = document.querySelectorAll('.screen'),
     screenGame = document.querySelector('.screen_game'),
     screenStart = document.querySelector('.screen_start'),
@@ -21,12 +20,32 @@ let posInit = 0,
     isScroll = false;
 
 
-let lines;//блоки заднего фона
+let lines,//блоки заднего фона
+    enemies; //препятствия
 let gameArea;
 const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
+const enemyOffsets = [-20, -10, 10, 20];
+const lineAvailablePositions = [];
+const enemyStyles = [{name: 'enemy1'}, {name: 'enemy2'}, {name: 'enemy3'}, {name: 'enemy4'}, {name: 'enemy5'}];
+const enemyPositions = [
+    (65 / 390),
+    0.5,
+    (330 / 390),
+];
+
+const settings = {
+    start: false,
+    score: 0,
+    speed: 6,
+    traffic: 3,
+    mode: 'gravity'
+};
 
 
-const enemyStyles = ['enemy1', 'enemy2', 'enemy3', 'enemy4', 'enemy5'];
+let speedSum = settings.speed
+let speedSumInc = 1
+let puddleSpeedSum = settings.speed
+let puddleSpeedSumInc = 1
 
 car.classList.add('car');
 
@@ -45,14 +64,6 @@ const keys = {
     ArrowRight: false,
 };
 
-const settings = {
-    start: false,
-    score: 0,
-    speed: 6,
-    traffic: 3,
-    mode: 'gravity'
-};
-
 function getQuantityElements(heightElement) {
     return document.documentElement.clientHeight / heightElement + 1;
 }
@@ -67,7 +78,7 @@ diffBtn.forEach(item => {
             // settings.speed = 5;
             // settings.traffic = 3.5;
             settings.mode = 'offroad'
-            diffSelected.textContent = 'Выбрана сложность: легкая';
+            speedSum = settings.speed;
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
@@ -76,20 +87,20 @@ diffBtn.forEach(item => {
             // settings.speed = 8;
             // settings.traffic = 3;
             settings.mode = 'gravity'
-            diffSelected.textContent = 'Выбрана сложность: средняя';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
+            speedSum = settings.speed / 2;
         } else if (item.classList.contains('hard')) {
             // settings.speed = 10;
             // settings.traffic = 2.5;
             settings.mode = 'gravity'
-            diffSelected.textContent = 'Выбрана сложность: сложная';
             diffBtn.forEach(item => {
                 item.classList.remove('active');
             });
             item.classList.add('active');
+            speedSum = settings.speed / 2;
         }
     });
 });
@@ -117,22 +128,48 @@ startBtn.addEventListener('click', () => {
         line_block.style.backgroundImage = 'url("image/' + settings.mode + '/' + lineStyles[random(lineStyles.length)] + '.png")'
         game.appendChild(line_block);
     }
-
     lines = document.querySelectorAll('.line_block');
 
-    for (let i = 0; i < getQuantityElements(80 * settings.traffic); i++) {
-        const enemy = document.createElement('div');
-        enemy.classList.add('enemy');
-        enemy.y = -100 * settings.traffic * (i + 1);
-        enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
-        enemy.style.top = enemy.y + 'px';
-        enemy.style.background =
-            'rgba(0, 0, 0, 0) url(./image/' +
-            enemyStyles[random(enemyStyles.length)] +
-            '.png) center / cover no-repeat';
-        gameArea.append(enemy);
-        gameArea.appendChild(enemy);
+
+    // ГЕНЕРАЦИЯ ПРЕПЯТСТВИЙ
+    for (let i = 0; i < 4; i++) {//lines
+        let y = -500 * (i + 1);
+
+        let countCars = i % 2 == 0 ? 1 : 2; // количество машин на одной полосе
+        let enemyOffsetsArray = JSON.parse(JSON.stringify(enemyOffsets));
+        lineAvailablePositions[i] = [...enemyPositions];
+
+        for (let j = 0; j < countCars; j++) {//lines
+            let randPos = random(lineAvailablePositions[i].length)
+            let carPos = gameArea.offsetWidth * lineAvailablePositions[i][randPos] + 'px';
+            let randOffset = random(enemyOffsetsArray.length)
+            let enemyOffset = enemyOffsetsArray[randOffset]
+            lineAvailablePositions[i].splice(randPos, 1)
+            enemyOffsetsArray.splice(randOffset, 1)
+
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+            enemy.dataset.line = i;
+            enemy.dataset.pos = carPos;
+            enemy.dataset.offset = enemyOffset;
+            let chosen_enemy = enemyStyles[random(enemyStyles.length)]
+            // chosen_enemy.name = 'enemy1.png';
+            chosen_enemy.width = '50px';
+            // enemy.style.background =
+            //     'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
+            enemy.style.background =
+                'rgba(0, 0, 0, 0) url(image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+            // enemy.style.width = chosen_enemy.width
+            // enemy.style.height = chosen_enemy.height
+            enemy.y = y + enemyOffset
+            enemy.style.top = enemy.y + 'px';
+            enemy.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
+            gameArea.appendChild(enemy);
+        }
     }
+
+    enemies = document.querySelectorAll('.enemy');
+
     settings.score = 0;
     settings.start = true;
     gameArea.appendChild(car);
@@ -193,7 +230,7 @@ let swipeAction = function() {
 
         keys.ArrowRight = false
         keys.ArrowLeft = false
-        settings.x = Math.ceil(posX1) - 25
+        settings.x = Math.ceil(posX1) - ( 100 / 590 * gameArea.offsetWidth) - 50
         if (settings.x > gameArea.offsetWidth - car.offsetWidth) {
             settings.x = gameArea.offsetWidth - car.offsetWidth
         }
@@ -249,7 +286,6 @@ function moveRoad() {
     });
 }
 function moveEnemy() {
-    let enemies = document.querySelectorAll('.enemy');
     enemies.forEach(function (item) {
         let carRect = car.getBoundingClientRect();
         let enemyRect = item.getBoundingClientRect();
@@ -272,15 +308,21 @@ function moveEnemy() {
                 item.classList.remove('active');
             });
         }
-        item.y += settings.speed / 2;
+        item.y += speedSum;
         item.style.top = item.y + 'px';
         if (item.y >= document.documentElement.clientHeight) {
-            item.y = -80 * settings.traffic;
-            item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
+            item.y = -2000 + document.documentElement.clientHeight;
+            let carPos = gameArea.offsetWidth * lineAvailablePositions[item.dataset.line][0] + 'px';
+            let chosen_enemy = enemyStyles[random(enemyStyles.length)]
+            // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
+            item.style.left = 'calc(' + carPos + ' - ' + '50px' + '/ 2)'
+            lineAvailablePositions[item.dataset.line] = [item.dataset.pos]
+            item.dataset.pos = carPos;
+
             item.style.background =
-                'rgba(0, 0, 0, 0) url(./image/' +
-                enemyStyles[random(enemyStyles.length)] +
-                '.png) center / cover no-repeat';
+                'rgba(0, 0, 0, 0) url(./image/' + chosen_enemy.name + '.png) center / cover no-repeat';
+            // item.style.width = chosen_enemy.width
+            // item.style.height = chosen_enemy.height
         }
     });
 }
