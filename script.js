@@ -1,5 +1,6 @@
-const score = document.querySelector('.score'),
+const score = document.querySelector('.score_container'),
     startBtn = document.querySelector('.game__start'),
+    game = document.querySelector('.game'),
     gameArea = document.querySelector('.gamearea'),
     car = document.createElement('div'),
     diffBtn = document.querySelectorAll('.difficulty__button'),
@@ -101,6 +102,7 @@ startBtn.addEventListener('click', () => {
     screenGame.classList.add('screen-up')
     screenGame.classList.remove('screen_hide')
     screenStart.classList.remove('screen_show');
+    score.classList.remove('hide');
     // ГЕНЕРАЦИЯ ПОЛЯ
     for (let j = 0; j < 5; j++) {
         const line_block = document.createElement('div');
@@ -108,7 +110,7 @@ startBtn.addEventListener('click', () => {
         line_block.style.bottom = (j) * 298 + 'px';
         line_block.y = ((j) * 298);
         line_block.style.backgroundImage = 'url("image/' + settings.mode + '/' + lineStyles[random(lineStyles.length)] + '.png")'
-        gameArea.appendChild(line_block);
+        game.appendChild(line_block);
     }
 
     lines = document.querySelectorAll('.line_block');
@@ -204,7 +206,7 @@ function startGame(event) {
 function playGame() {
     if (settings.start) {
         settings.score += settings.speed;
-        score.innerHTML = 'Score <br>' + settings.score;
+        score.innerHTML = settings.score;
         moveRoad();
         moveEnemy();
         if (keys.ArrowLeft && settings.x > 0) {
