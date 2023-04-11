@@ -150,19 +150,27 @@ body {
 .car,
 .enemy {
     display: block;
-    width: 50px;
-    height: 100px;
-    /*background-image: url(image/player.png);*/
-    /*background-repeat: no-repeat;*/
-    /*background-size: cover;*/
-    /*background-position: center;*/
     position: absolute;
-    background: rgba(0, 0, 0, 0) url(image/player.png) center / cover no-repeat;
-    left: 225px;
-    bottom: 10px;
     z-index: 5;
 }
 
+.car.gravity {
+    width: 60px;
+    height: 107px;
+    background: rgba(0, 0, 0, 0) url(image/gravity/player.svg) center / cover no-repeat;
+}
+
+.car.comfort {
+    width: 60px;
+    height: 117px;
+    background: rgba(0, 0, 0, 0) url(image/comfort/player.svg) center / cover no-repeat;
+}
+
+.car.offroad {
+    width: 60px;
+    height: 125px;
+    background: rgba(0, 0, 0, 0) url(image/offroad/player.png) center / cover no-repeat;
+}
 
 .enemy.gravity.enemy1 {
     width: 67px;
@@ -171,24 +179,21 @@ body {
 }
 
 .enemy.gravity.enemy2 {
-    width: 46.87px;
-    height: 98px;
+    width: 54px;
+    height: 112px;
     background: rgba(0, 0, 0, 0) url(image/gravity/enemy2.svg) center / cover no-repeat;
-    /*background-image: url(image/gravity/enemy2.svg);*/
 }
 
 .enemy.gravity.enemy3 {
-    width: 64.97px;
-    height: 125px;
+    width: 70px;
+    height: 135px;
     background: rgba(0, 0, 0, 0) url(image/gravity/enemy3.svg) center / cover no-repeat;
-    /*background-image: url(image/gravity/enemy3.svg);*/
 }
 
 .enemy.gravity.enemy4 {
-    width: 51px;
-    height: 96.98px;
+    width: 55px;
+    height: 103px;
     background: rgba(0, 0, 0, 0) url(image/gravity/enemy4.svg) center / cover no-repeat;
-    /*background-image: url(image/gravity/enemy4.svg);*/
 }
 
 
@@ -196,28 +201,24 @@ body {
     width: calc(100% * 133 /390);
     height: calc(100% * 49 / 1200);
     background: rgba(0, 0, 0, 0) url(image/offroad/enemy1.svg) center / cover no-repeat;
-    /*background-image: url(image/offroad/enemy1.svg);*/
 }
 
 .enemy.offroad.enemy2 {
     width: calc(100% * 111 /390);
     height: calc(100% * 50 / 1200);
     background: rgba(0, 0, 0, 0) url(image/offroad/enemy2.svg) center / cover no-repeat;
-    /*background-image: url(image/offroad/enemy2.svg);*/
 }
 
 .enemy.comfort.enemy1 {
     width: calc(100% * 89 /390);
     height: calc(100% * 49 / 1200);
     background: rgba(0, 0, 0, 0) url(image/comfort/enemy1.svg) center / cover no-repeat;
-    /*background-image: url(image/comfort/enemy1.svg);*/
 }
 
 .enemy.comfort.enemy2 {
     width: calc(100% * 30 /390);
     height: calc(100% * 35 / 1200);
     background: rgba(0, 0, 0, 0) url(image/comfort/enemy2.svg) center / cover no-repeat;
-    /*background-image: url(image/comfort/enemy2.svg);*/
 }
 
 .gamearea {

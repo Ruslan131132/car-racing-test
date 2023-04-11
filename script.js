@@ -1,11 +1,14 @@
 const score = document.querySelector('.score_container'),
-    startBtn = document.querySelector('.game__start'),
     game = document.querySelector('.game'),
     car = document.createElement('div'),
     diffBtn = document.querySelectorAll('.difficulty__button'),
-    screens = document.querySelectorAll('.screen'),
+    againBtn = document.querySelector('.play_again'),
+    backToMenuBtn = document.querySelector('.change-mode-button'),
+    leaderBtn = document.querySelector('.leader-button'),
     screenGame = document.querySelector('.screen_game'),
     screenStart = document.querySelector('.screen_start'),
+    screenResult = document.querySelector('.screen_result'),
+    pointsValue = document.querySelector('.points-value'),
     startMenu = document.querySelector('.start__menu');
 
 let allowSwipe = true;
@@ -21,8 +24,9 @@ let posInit = 0,
 
 
 let lines,//блоки заднего фона
-    enemies; //препятствия
-let gameArea;
+    enemies, //препятствия
+    gameArea,//игровое поле
+    trustScroll;
 const lineStyles = ['img_1', 'img_2', 'img_3', 'img_4'];
 const enemyOffsets = [-20, -10, 10, 20];
 const lineAvailablePositions = [];
@@ -82,63 +86,58 @@ const keys = {
     ArrowRight: false,
 };
 
-function getQuantityElements(heightElement) {
-    return document.documentElement.clientHeight / heightElement + 1;
-}
-
 function random(num) {
     return Math.floor(Math.random() * num);
 }
 
 diffBtn.forEach(item => {
     item.addEventListener('click', () => {
-        if (item.classList.contains('easy')) {
-            // settings.speed = 5;
-            // settings.traffic = 3.5;
+        if (item.classList.contains('offroad')) {
             settings.mode = 'offroad'
             speedSum = settings.speed;
-            diffBtn.forEach(item => {
-                item.classList.remove('active');
-            });
-            item.classList.add('active');
+            speedSumInc = 1
             enemyStyles = ['enemy1', 'enemy2'];
-        } else if (item.classList.contains('medium')) {
-            // settings.speed = 8;
-            // settings.traffic = 3;
+            generateGame()
+        } else if (item.classList.contains('gravity')) {
             settings.mode = 'gravity'
-            diffBtn.forEach(item => {
-                item.classList.remove('active');
-            });
-            item.classList.add('active');
             speedSum = settings.speed / 2;
+            speedSumInc = 0.5
             enemyStyles = ['enemy1', 'enemy2', 'enemy3', 'enemy4'];
-        } else if (item.classList.contains('hard')) {
-            // settings.speed = 10;
-            // settings.traffic = 2.5;
+            generateGame()
+        } else if (item.classList.contains('comfort')) {
             settings.mode = 'comfort'
-            diffBtn.forEach(item => {
-                item.classList.remove('active');
-            });
             item.classList.add('active');
-            speedSum = settings.speed / 2;
+            speedSum = settings.speed;
+            speedSumInc = 1
             enemyStyles = ['enemy1', 'enemy2'];
+            generateGame()
         }
     });
 });
 
-startBtn.addEventListener('click', () => {
-    startMenu.classList.add('hide');
+function generateGame() {
     game.innerHTML = '';
-    car.style.left = 'calc(50% - 25px)';
-    car.style.bottom = '75px';
-    screenGame.classList.add('screen-up')
+    screenGame.classList.add('screen-show')
     screenGame.classList.remove('screen_hide')
-    screenStart.classList.remove('screen_show');
+    screenStart.classList.remove('screen-show')
+    screenStart.classList.add('screen_hide')
+    // screenResult.classList.add('screen_hide')
+    // screenResult.classList.remove('screen-show')
     score.classList.remove('hide');
-
     gameArea = document.createElement('div');
     gameArea.classList.add('gamearea');
     game.appendChild(gameArea);
+    car.style.left = 'calc(50% - 25px)';
+    car.style.bottom = '170px';
+    car.classList.add(settings.mode)
+
+    trustScroll = document.createElement('div');
+    trustScroll.classList.add('trust-scroll__image')
+    trustScroll.style.display = 'block'
+    setTimeout(() => {
+        trustScroll.style.display = 'none'
+    }, 3000);
+    game.appendChild(trustScroll)
 
     // ГЕНЕРАЦИЯ ПОЛЯ
     for (let j = 0; j < 5; j++) {
@@ -167,7 +166,6 @@ startBtn.addEventListener('click', () => {
             let enemyOffset = enemyOffsetsArray[randOffset]
             lineAvailablePositions[i].splice(randPos, 1)
             enemyOffsetsArray.splice(randOffset, 1)
-
             const enemy = document.createElement('div');
             enemy.classList.add('enemy');
             enemy.classList.add(settings.mode);
@@ -177,13 +175,6 @@ startBtn.addEventListener('click', () => {
             let chosen_enemy = enemyStyles[random(enemyStyles.length)]
             enemy.classList.add(chosen_enemy);
             enemy.dataset.current = chosen_enemy;
-            // chosen_enemy.name = 'enemy1.png';
-            // enemy.style.background =
-            //     'rgba(0, 0, 0, 0) url(image/' + settings.mode + '/' + chosen_enemy.name + '.svg) center / cover no-repeat';
-            // enemy.style.background =
-            //     'rgba(0, 0, 0, 0) url(image/' + chosen_enemy + '.png) center / cover no-repeat';
-            // enemy.style.width = chosen_enemy.width
-            // enemy.style.height = chosen_enemy.height
             enemy.y = y + enemyOffset
             enemy.style.top = enemy.y + 'px';
             gameArea.appendChild(enemy);
@@ -193,10 +184,11 @@ startBtn.addEventListener('click', () => {
     enemies = document.querySelectorAll('.enemy');
 
     //Background лужи
-    puddle.style.backgroundImage = 'url("image/' + settings.mode + '/puddle.svg")'
-    gameArea.appendChild(puddle);
-    gameArea.appendChild(splash);
-
+    if (settings.mode == 'offroad') {
+        puddle.style.backgroundImage = 'url("image/' + settings.mode + '/puddle.svg")'
+        gameArea.appendChild(puddle);
+        gameArea.appendChild(splash);
+    }
 
     //Машина на другой полосе
 
@@ -216,13 +208,22 @@ startBtn.addEventListener('click', () => {
     settings.x = car.offsetLeft;
     settings.y = car.offsetTop;
     audio.autoplay = true;
+    audio.loop = true;
     audio.play();
     requestAnimationFrame(playGame);
-});
+}
+//
+// againBtn.onclick = () => {
+//     generateGame()
+// }
 
-
-// sliderTrack.addEventListener('transitionend', () => allowSwipe = true);
-
+// backToMenuBtn.onclick = () => {
+//     screenResult.classList.add('screen_hide');
+//     screenGame.classList.add('screen_hide')
+//     screenStart.classList.remove('screen_hide');
+//     screenStart.classList.add('screen_show');
+//     car.classList.remove(settings.mode)
+// }
 
 let getEvent = function () {
     return (event.type.search('touch') !== -1) ? event.touches[0] : event;
@@ -230,10 +231,7 @@ let getEvent = function () {
 
 let swipeStart = function () {
     let evt = getEvent();
-
-
     if (allowSwipe) {
-
         posInit = posX1 = evt.clientX;
         posY1 = evt.clientY;
         //если страница с игрой и игра идет?
@@ -245,13 +243,10 @@ let swipeStart = function () {
 
 let swipeEnd = function() {
     posFinal = posInit - posX1;
-
     isScroll = false;
     isSwipe = false;
-
     document.removeEventListener('touchmove', swipeAction);
     document.removeEventListener('touchend', swipeEnd);
-
     keys.ArrowRight = false
     keys.ArrowLeft = false
 }
@@ -268,16 +263,16 @@ let swipeAction = function() {
     posY2 = posY1 - evt.clientY;
     posY1 = evt.clientY;
 
-        keys.ArrowRight = false
-        keys.ArrowLeft = false
-        settings.x = Math.ceil(posX1) - ( 100 / 590 * gameArea.offsetWidth) - 50
-        if (settings.x > gameArea.offsetWidth - car.offsetWidth) {
-            settings.x = gameArea.offsetWidth - car.offsetWidth
-        }
-        if (settings.x < 0) {
-            settings.x = 0
-        }
-        return
+    keys.ArrowRight = false
+    keys.ArrowLeft = false
+    settings.x = Math.ceil(posX1) - ( 100 / 590 * gameArea.offsetWidth) - 50
+    if (settings.x > gameArea.offsetWidth - car.offsetWidth) {
+        settings.x = gameArea.offsetWidth - car.offsetWidth
+    }
+    if (settings.x < 0) {
+        settings.x = 0
+    }
+    return
 }
 
 function startGame(event) {
@@ -291,11 +286,13 @@ function playGame() {
         score.innerHTML = settings.score;
         moveRoad();
         moveEnemy();
-        movePuddle();
+        if (settings.mode == 'offroad') {
+            movePuddle();
+        }
 
         let checkScore = settings.score % 5000
 
-        if (settings.speed <= 12 && checkScore > 4996 || (checkScore >= 0 && checkScore < 4)) {
+        if (settings.speed <= 15 && checkScore > 4996 || (checkScore >= 0 && checkScore < 4)) {
             settings.speed += 1
             speedSum += speedSumInc
             puddleSpeedSum += puddleSpeedSumInc
@@ -346,38 +343,62 @@ function moveEnemy() {
             carRect.bottom >= enemyRect.top
         ) {
             settings.start = false;
-
+            boomAudio.play()
             audio.pause();
             audio.currentTime = 0;
             audio.autoplay = false;
-            startMenu.classList.remove('hide');
-            settings.speed = 5;
-            settings.traffic = 3;
-            diffBtn.forEach(item => {
-                item.classList.remove('active');
+            const boom = document.createElement('div');
+            boom.classList.add('boom');
+            gameArea.append(boom);
+
+            //ПОЗИЦИЯ ПО X
+            if (carRect.right - enemyRect.left < 15) {
+                boom.style.left = 'calc(' + item.style.left + ' - 25px)'
+            } else if (enemyRect.right - carRect.left < 15) {
+                boom.style.left = 'calc(' + car.style.left + ' - 25px)'
+            } else {
+                boom.style.left = 'calc(' + car.style.left + ' + 5px)'
+            }
+
+            //ПОЗИЦИЯ ПО Y
+            if (enemyRect.bottom - carRect.top < 10) {
+                boom.style.top = carRect.top - 25 + 'px';
+            } else if (carRect.bottom - enemyRect.top < 10) {
+                boom.style.top = enemyRect.top - 25 + 'px';
+            } else {
+                boom.style.top = enemyRect.top + 25 + 'px';
+            }
+
+            settings.speed = 6
+            // pointsValue.innerHTML = settings.score;
+            speedSum = settings.mode == 'gravity' ? settings.speed / 2 : settings.speed
+            puddleSpeedSum = settings.speed;
+
+            savePoints({
+                mode: settings.mode,
+                score: settings.score
             });
+
+            setTimeout(() => {
+                game.innerHTML = '';
+                boomAudio.pause();
+                boomAudio.currentTime = 0;
+                // screenResult.classList.remove('screen_hide');
+                screenStart.classList.add('screen_hide');
+                screenGame.classList.add('screen_hide');
+                againBtn.classList.add(settings.mode);
+                screenGame.classList.remove('screen-up')
+                score.classList.add('hide');
+            }, 2000);
         }
         item.y += speedSum;
         item.style.top = item.y + 'px';
         if (item.y >= document.documentElement.clientHeight) {
             item.y = -8000 + document.documentElement.clientHeight;
             let carPos =  lineAvailablePositions[item.dataset.line][0];
-            let chosen_enemy = enemyStyles[random(enemyStyles.length)]
-            // item.classList.remove(item.dataset.current)
-            // item.classList.add(chosen_enemy)
-
-            // item.style.left = 'calc(' + carPos + ' - ' + chosen_enemy.width + '/ 2)'
-            // console.log(gameArea.offsetWidth)
-            // console.log(lineAvailablePositions[item.dataset.line][0])
             item.style.left = gameArea.offsetWidth * carPos - (item.offsetWidth / 2) + 'px'
             lineAvailablePositions[item.dataset.line] = [item.dataset.pos]
             item.dataset.pos = carPos;
-
-
-            // item.style.background =
-            //     'rgba(0, 0, 0, 0) url(./image/' + chosen_enemy.name + '.png) center / cover no-repeat';
-            // item.style.width = chosen_enemy.width
-            // item.style.height = chosen_enemy.height
         }
     });
 }
@@ -388,9 +409,9 @@ function movePuddle() {
     let enemyRect = puddle.getBoundingClientRect();
     if (carRect.top - enemyRect.bottom <= puddleSpeedSum && carRect.top - enemyRect.bottom >= -puddleSpeedSum) {
         splashAudio.play()
-        splash.classList.remove('hide');
         splash.style.left = 'calc(' + carXPos +  ' - ' + ((gameArea.offsetWidth * 212 / 590 / 2) - 25) + 'px)'
         splash.style.top = carRect.top + 'px';
+        splash.classList.remove('hide');
         setTimeout(() => {
             splash.classList.add('splash-after');
             splash.style.left = 'calc(' + carXPos +  ' - ' + ((gameArea.offsetWidth * 300 / 590 / 2) - 25) + 'px)'
@@ -406,6 +427,57 @@ function movePuddle() {
     if (puddle.y >= document.documentElement.clientHeight) {
         puddle.y = -2500;
     }
+}
+
+// leaderBtn.onclick = () => {
+//     document.querySelector('.modal-overlay').classList.add('--show')
+//     let modalBody = document.querySelector('.modal-body');
+//     modalBody.innerHTML = ''
+//     let xhr = new XMLHttpRequest();
+//     xhr.open('GET', 'http://cordiant.4k-pr.com/api/getTopUsers', true);
+//
+//     xhr.setRequestHeader("Accept", "application/json");
+//     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+//     xhr.send();
+//
+//     xhr.onload = function () {
+//         if (xhr.status != 200) { // анализируем HTTP-статус ответа, если статус не 200, то произошла ошибка
+//             console.log(`Ошибка ${xhr.status}: ${xhr.statusText}`); // Например, 404: Not Found
+//         } else { // если всё прошло гладко, выводим результат
+//             console.log(`Готово, получили ${xhr.response.length} байт`); // response -- это ответ сервера
+//             let response = JSON.parse(xhr.response);
+//             modalBody.innerHTML = response.data.map(item => {
+//                 return `<div class="user-item">
+//                 <div class="user-info">
+//                     <img class="user-img" src="${item.avatar ? 'http://cordiant.4k-pr.com/storage/' + item.avatar : 'image/icons/user.jpg'}">
+//                     <span class="user-mode">${item.mode}</span>
+//                 </div>
+//                 <span class="user-name">${item.tg ? item.tg : item.name}</span>
+//                 <span class="user-points">${item.count}</span>
+//             </div>`
+//             }).join('');
+//         }
+//     };
+//
+// }
+
+function savePoints(data) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let user_id = urlParams.get('user_id')
+
+    if (user_id == null) return;
+
+    let formData = JSON.stringify({
+        user_id: user_id,
+        count: data.score,
+        mode: data.mode
+    });
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://cordiant.4k-pr.com/api/addPoints', true);
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.send(formData);
 }
 
 
